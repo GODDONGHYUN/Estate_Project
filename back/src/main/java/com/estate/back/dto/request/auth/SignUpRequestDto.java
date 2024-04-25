@@ -1,4 +1,4 @@
-package com.estate.back.dto.request;
+package com.estate.back.dto.request.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
