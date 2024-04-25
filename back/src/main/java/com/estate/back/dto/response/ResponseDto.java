@@ -58,7 +58,7 @@ public class ResponseDto {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
 		}
 
-		public static ResponseEntity<ResponseDto> emailSendFailed() {
+		public static ResponseEntity<ResponseDto> mailSendFailed() {
 			ResponseDto responseBody =
 			new ResponseDto(ResponseCode.MAIL_SEND_FAILED, ResponseMessage.MAIL_SEND_FAILED);
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseBody);
