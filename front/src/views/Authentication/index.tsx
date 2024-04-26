@@ -4,6 +4,8 @@ import "./style.css";
 import SignInBackground from "src/assets/image/sign-in-background.png";
 import SignUpBackground from "src/assets/image/sign-up-background.png";
 import InputBox from "src/components/Inputbox";
+import { IdCheckRequestDto } from "src/apis/auth/dto/resquest";
+import { idCheckRequest } from "src/apis/auth";
 
 //                    type                    //
 type AuthPage = "sign-in" | "sign-up";
@@ -226,15 +228,10 @@ function SignUp({ onLinkClickHandler }: Props) {
 
   const onIdButtonClickHandler = () => {
     if (!idButtonStatus) return;
+    if (!id || !id.trim()) return;
 
-    const idCheck = id !== "admin";
-    setIdCheck(idCheck);
-    setIdError(!idCheck);
-
-    const idMessage = idCheck
-      ? "사용 가능한 아이디입니다."
-      : "이미 사용중인 아이디입니다.";
-    setIdMessage(idMessage);
+    const requestBody: IdCheckRequestDto = { userId: id };
+    idCheckRequest(requestBody);
   };
 
   const onEmailButtonClickHandler = () => {
@@ -351,7 +348,7 @@ function SignUp({ onLinkClickHandler }: Props) {
 //                    component                    //
 export default function Authentication() {
   //                    state                    //
-  const [page, setPage] = useState<AuthPage>("sign-in");
+  const [page, setPage] = useState<AuthPage>("sign-up");
 
   //                    event handler                    //
   const onLinkClickHandler = () => {
@@ -359,7 +356,7 @@ export default function Authentication() {
     else setPage("sign-in");
   };
 
-  //                    constant                    //
+  //  										constant										    //
   const AuthenticationContents =
     page === "sign-in" ? (
       <SignIn onLinkClickHandler={onLinkClickHandler} />
