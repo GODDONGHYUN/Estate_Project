@@ -4,8 +4,11 @@ import "./style.css";
 import SignInBackground from "src/assets/image/sign-in-background.png";
 import SignUpBackground from "src/assets/image/sign-up-background.png";
 import InputBox from "src/components/Inputbox";
-import { IdCheckRequestDto } from "src/apis/auth/dto/resquest";
-import { idCheckRequest } from "src/apis/auth";
+import {
+  EmailAuthRequestDto,
+  IdCheckRequestDto,
+} from "src/apis/auth/dto/resquest";
+import { emailAuthRequest, idCheckRequest } from "src/apis/auth";
 import ResponseDto from "src/apis/response.dto";
 
 //                    type                    //
@@ -185,6 +188,28 @@ function SignUp({ onLinkClickHandler }: Props) {
     }
   };
 
+  const emailAuthResponse = (result: ResponseDto | null) => {
+    const emailMessage = !result
+      ? "서버에 문제가 있습니다."
+      : result.code === "VF"
+      ? "이메일 형식이 아닙니다."
+      : result.code === "DE"
+      ? "중복된 이메일 입니다."
+      : result.code === "MF"
+      ? "인증번호 전송에 실패했습니다."
+      : result.code === "DBE"
+      ? "서버에 문제가 있습니다."
+      : result.code === "SU"
+      ? "인증번호가 전송 되었습니다."
+      : "";
+    const emailCheck = result !== null && result.code === "SU";
+    const emailError = !emailCheck;
+
+    setEmailMessage(emailMessage);
+    setEmailCheck(emailCheck);
+    setEmailError(emailError);
+  };
+
   //                    event handler                    //
   const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
@@ -267,13 +292,14 @@ function SignUp({ onLinkClickHandler }: Props) {
 
     const emailPattern = /^[a-zA-Z0-9]*@([-.]?[a-zA-Z0-9])*\.[a-zA-Z]{2,4}$/;
     const isEmailPattern = emailPattern.test(email);
-    setEmailCheck(isEmailPattern);
-    setEmailError(!isEmailPattern);
-
-    const emailMessage = isEmailPattern
-      ? "인증번호가 전송되었습니다."
-      : "이메일 형식이 아닙니다.";
-    setEmailMessage(emailMessage);
+    if (!isEmailPattern) {
+      setEmailCheck(false);
+      setEmailError(true);
+      setEmailMessage("이메일 형식이 아닙니다.");
+      return;
+    }
+    const requestBody: EmailAuthRequestDto = { userEmail: email };
+    emailAuthRequest(requestBody).then(emailAuthResponse);
   };
 
   const onAuthNumberButtonClickHandler = () => {
