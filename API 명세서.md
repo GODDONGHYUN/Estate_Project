@@ -124,6 +124,113 @@ Content-Type: application/json;charset=UTF-8
 
 ---
 
+<h2 style='background-color: rgba(55, 55, 55, 0.2); text-align: center'>User 모듈</h2>
+
+사용자 정보와 관련된 REST API 모듈
+
+- url : /api/v1/user
+
+---
+
+#### - 로그인 유저 정보 반환
+
+##### 설명
+
+클라이언트로부터 Request Header의 Authorization 필드로 Bearer 토큰을 포함하여 요청을 받으면 해당 토큰의 작성자(subject)에 해당하는 사용자 정보를 반환,
+
+- method : **GET**
+- URL : **/sign-in**
+
+##### Request
+
+###### Header
+
+| name          |        description        | required |
+| ------------- | :-----------------------: | :------: |
+| Authorization | 인증에 사용될 Bearer 토큰 |    O     |
+
+###### Request Body
+
+| name         |  type  |    description    | required |
+| ------------ | :----: | :---------------: | :------: |
+| userId       | String |  사용자의 아이디  |    O     |
+| userPassword | String | 사용자의 비밀번호 |    O     |
+
+###### Example
+
+```bash
+curl -v -X GET "http://localhost:4000/api/v1/user" \
+ -H "Authorization : Bearer {JWT}" \
+ -d "userPassword=P!ssw0rd"
+```
+
+##### Response
+
+###### Header
+
+| name         |                       description                        | required |
+| ------------ | :------------------------------------------------------: | :------: |
+| Content-Type | 반환하는 Response Body의 Content Type (application/json) |    O     |
+
+###### Response Body
+
+| name     |  type  |    description    | required |
+| -------- | :----: | :---------------: | :------: |
+| code     | String |  사용자의 아이디  |    O     |
+| message  | String | 사용자의 비밀번호 |    O     |
+| userId   | String |  사용자의 아이디  |    O     |
+| userrole | String |   사용자의 권한   |    O     |
+
+###### Example
+
+**응답 성공**
+
+```bash
+HTTP/1.1 200 OK
+Content-Type: application/json;charset=UTF-8
+{
+  "code": "SU",
+  "message": "Success.",
+  "userId": "${userId}",
+  "userRole": "${userRole}"
+}
+```
+
+**응답 : 실패 (인가 실패)**
+
+```bash
+HTTP/1.1 403 Forbidden
+Content-Type: application/json;charset=UTF-8
+{
+  "code": "AF",
+  "message": "Authorization Failed."
+}
+```
+
+**응답 : 실패 (로그인 정보 불일치)**
+
+```bash
+HTTP/1.1 401 Unauthorized
+Content-Type: application/json;charset=UTF-8
+{
+  "code": "AF",
+  "message": "Authentication Failed."
+}
+```
+
+**응답 : 실패 (데이터베이스 오류)**
+
+```bash
+HTTP/1.1 500 Internal Server Error
+Content-Type: application/json;charset=UTF-8
+{
+  "code": "DBE",
+  "message": "Database Error."
+}
+```
+
+---
+
 #### - 아이디 중복 확인
 
 ##### 설명
