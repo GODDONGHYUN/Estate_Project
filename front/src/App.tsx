@@ -13,8 +13,9 @@ import {
   QNA_WRITE_PATH,
   RATIO_PATH,
   SERVICE_PATH,
+  SNS_PATH,
 } from "./constant/Index";
-import Authentication from "./views/Authentication";
+import Authentication, { Sns } from "./views/Authentication";
 import ServiceContainer from "./layouts/ServiceContainer";
 import Local from "./views/service/Local";
 import Ratio from "./views/service/Ratio";
@@ -49,6 +50,7 @@ function App() {
   return (
     <Routes>
       <Route index element={<Index />} />
+      <Route path={SNS_PATH} element={<Sns />} />
       <Route path={AUTH_PATH} element={<Authentication />} />
       <Route path={SERVICE_PATH} element={<ServiceContainer />}>
         <Route path={LOCAL_PATH} element={<Local />} />
