@@ -73,6 +73,7 @@ CREATE TABLE board (
 	reception_number INT PRIMARY KEY AUTO_INCREMENT,
 	status BOOLEAN NOT NULL DEFAULT(false),
 	title VARCHAR(100) NOT NULL,
+	content TEXT NOT NULL,
 	writer_id VARCHAR(50) NOT NULL,
 	writer_datetime DATETIME NOT NULL DEFAULT(now()),
 	view_count INT NOT NULL DEFAULT(0),
@@ -80,6 +81,8 @@ CREATE TABLE board (
 	CONSTRAINT writer_id_fk 
 					FOREIGN KEY (writer_id) REFERENCES user(user_id)
 );
+
+DROP TABLE board
 
 # ! 개발자 계정 생성
 CREATE USER 'developer'@'%' IDENTIFIED BY 'P!ssw0rd';
