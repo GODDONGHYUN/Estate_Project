@@ -1,7 +1,12 @@
 package com.estate.back.controller;
 
+import com.estate.back.dto.response.board.GetBoardListResponseDto;
+import com.estate.back.dto.response.board.GetSearchBoardListResponseDto;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,4 +34,20 @@ public class BoardContoller {
 					ResponseEntity<ResponseDto> response = boardService.postBoard(requestBody, userId);
 					return response;
 			}
-}
+
+			@GetMapping("/list")
+			public ResponseEntity<? super GetBoardListResponseDto> getBoardList() {
+				ResponseEntity<? super GetBoardListResponseDto> response = boardService.getBoardList();
+				
+				return response;
+
+			}
+
+			@GetMapping("/list/{searchWord}") 
+			public ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(
+					@PathVariable("searchWord") String searchWord
+			) {
+					ResponseEntity< ? super GetSearchBoardListResponseDto> response  = boardService.getSearchBoardList(searchWord);
+					return response;
+			}
+ }

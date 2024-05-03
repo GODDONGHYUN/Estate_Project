@@ -140,7 +140,7 @@ client가 header에 bearer 토큰을 포함하여 요청
 
 7. 'SU' 응답 처리
 
-### 게시물 화면(Board)
+### 게시물 작성 화면(BoardWrite)
 
 0. 클라이언트로부터 Autorization 헤더와 Request Body를 포함하여 요청
 
@@ -157,3 +157,7 @@ client가 header에 bearer 토큰을 포함하여 요청
    2.1 데이터베이스 오류가 발생하면 'DBE' 응답 처리
 
 3. 'SU' 응답 처리
+
+### 게시물 전체 리스트 화면(BoardList)
+
+데이터 베이스에서 전체 리스트 조회 -> List<BoardEntity> -> List<BoardItem>

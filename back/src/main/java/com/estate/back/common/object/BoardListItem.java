@@ -1,6 +1,13 @@
 package com.estate.back.common.object;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import com.estate.back.entity.BoardEntity;
 import lombok.Getter;
+
+import java.util.ArrayList;
 
 @Getter
 public class BoardListItem {
@@ -13,5 +20,33 @@ public class BoardListItem {
 	private String writeDatetime;
 	private Integer viewCount;
 	private String comment;
-	
+
+	private BoardListItem(BoardEntity boardEntity) throws Exception {
+		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		Date datetime = simpleDateFormat.parse(boardEntity.getWriteDatetime());
+		simpleDateFormat = new SimpleDateFormat("yy.MM.dd");
+		String writeDateTime = simpleDateFormat.format(datetime);
+
+		String writerId = boardEntity.getWriterId();
+		writerId = writerId.substring( 0, 1) + " +".repeat(writerId.length() - 1 );
+
+		this.receptionNumber = boardEntity.getReceptionNumber();
+		this.status = boardEntity.getStatus();
+		this.title = boardEntity.getTitle();
+		this.writerId = writerId;
+		this.writeDatetime = writeDateTime;
+		this.viewCount = boardEntity.getViewCount();
+
+	}
+
+	public static List<BoardListItem> getList(List<BoardEntity>boardEntities) throws Exception {
+		List<BoardListItem> boardList = new ArrayList<>();
+
+		for ( BoardEntity  boardEntity : boardEntities) {
+				BoardListItem boardListItem = new BoardListItem(boardEntity);
+				boardList.add(boardListItem);
+		}
+		return boardList;
+	}
+
 }
