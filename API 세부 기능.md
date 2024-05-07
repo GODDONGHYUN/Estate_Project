@@ -161,3 +161,9 @@ client가 header에 bearer 토큰을 포함하여 요청
 ### 게시물 전체 리스트 화면(BoardList)
 
 데이터 베이스에서 전체 리스트 조회 -> List<BoardEntity> -> List<BoardItem>
+
+### 게시물 화면
+
+- 유효성 검사(receptionNumber)
+- 데이터베이스의 Board 테이블에서 receptionNumber에 해당하는 레코드 조회
+  SELECT \* FROM board WHERE reception_number = :receptionNumber;
