@@ -1,16 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useRef, useState } from "react";
 import "./style.css";
 import { useUserStore } from "src/stores";
-import { getBoardRequest, increaseViewCountRequest } from "src/apis/board";
+import {
+  getBoardRequest,
+  increaseViewCountRequest,
+  postCommentRequest,
+} from "src/apis/board";
 import { useCookies } from "react-cookie";
 import { useNavigate, useParams } from "react-router";
 import ResponseDto from "src/apis/response.dto";
 import { AUTH_ABSOLUTE_PATH, QNA_LIST_ABSOLUTE_PATH } from "src/constant/Index";
 import { GetBoardResponseDto } from "src/apis/board/dto/response";
+import { PostCommentRequestDto } from "src/apis/board/dto/request";
 
 //                    component                    //
 export default function QnaDetail() {
   //                    state                    //
+  const commentRef = useRef<HTMLTextAreaElement | null>(null);
+
   const { loginUserId, loginUserRole } = useUserStore();
   const { receptionNumber } = useParams();
 
@@ -98,6 +105,32 @@ export default function QnaDetail() {
     setComment(comment);
   };
 
+  const postCommentResponse = (result: ResponseDto | null) => {
+    const message = !result
+      ? "서버에 문제가 있습니다."
+      : result.code === "AF"
+      ? "권한이 없습니다."
+      : result.code === "VF"
+      ? "입력데이터가 올바르지 않습니다."
+      : result.code === "NB"
+      ? "존재하지 않는 게시물 입니다."
+      : result.code === "WC"
+      ? "이미 답글이 작성 된 게시물 입니다."
+      : result.code === "DBE"
+      ? "서버에 문제가 있습니다."
+      : "";
+
+    if (!result || result.code !== "SU") {
+      alert(message);
+      return;
+    }
+
+    if (!receptionNumber || !cookies.accessToken) return;
+    getBoardRequest(receptionNumber, cookies.accessToken).then(
+      getBoardResponse
+    );
+  };
+
   //                    effect                    //
   useEffect(() => {
     if (!cookies.accessToken || !receptionNumber) return;
@@ -106,14 +139,44 @@ export default function QnaDetail() {
     );
   }, []);
 
+  //									 event handler									//
+  const onCommentChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    if (status || loginUserRole !== "ROLE_ADMIN") return;
+    const comment = event.target.value;
+    setComment(comment);
+
+    if (!commentRef.current) return;
+    commentRef.current.style.height = "auto";
+    commentRef.current.style.height = `${commentRef.current.scrollHeight}px`;
+  };
+
+  const onCommentSubmitClickHandler = () => {
+    if (
+      !comment ||
+      !comment.trim() ||
+      loginUserRole !== "ROLE_ADMIN" ||
+      !cookies.accessToken
+    )
+      return;
+    if (!receptionNumber) return;
+
+    const requestBody: PostCommentRequestDto = { comment };
+
+    postCommentRequest(receptionNumber, requestBody, cookies.accessToken).then(
+      postCommentResponse
+    );
+  };
+
   //                    render                    //
+  const coveredWriterId =
+    writerId && writerId[0] + "*".repeat(writerId.length - 1);
   return (
     <div id="qna-detail-wrapper">
       <div className="qna-detail-main-box">
         <div className="qna-detail-top-box">
           <div className="qna-detail-title-box">{title}</div>
           <div className="qna-detail-info-box">
-            <div className="qna-detail-info">작성자 {writerId}</div>
+            <div className="qna-detail-info">작성자 {coveredWriterId}</div>
             <div className="qna-detail-info-divider">{"|"}</div>
             <div className="qna-detail-info">작성일 {writeDate}</div>
             <div className="qna-detail-info-divider">{"|"}</div>
@@ -128,14 +191,19 @@ export default function QnaDetail() {
             <textarea
               className="qna-detail-comment-textarea"
               placeholder="답글을 작성해주세요."
+              ref={commentRef}
+              value={comment === null ? "" : comment}
+              onChange={onCommentChangeHandler}
             />
           </div>
-          <div className="primary-button">답글달기</div>
+          <div className="primary-button" onClick={onCommentSubmitClickHandler}>
+            답글달기
+          </div>
         </div>
       )}
       {status && (
         <div className="qna-detail-comment-box">
-          <div className="primary-badge">답변</div>
+          <div className="primary-bedge">답변</div>
           <div className="qna-detail-comment">{comment}</div>
         </div>
       )}
