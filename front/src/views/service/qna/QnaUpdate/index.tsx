@@ -117,6 +117,7 @@ export default function QnaUpdate() {
   let effectFlag = false;
   useEffect(() => {
     if (!receptionNumber || !cookies.accessToken) return;
+    if (!loginUserRole) return;
     if (effectFlag) return;
     effectFlag = true;
     if (loginUserRole !== "ROLE_USER") {
@@ -126,7 +127,7 @@ export default function QnaUpdate() {
     getBoardRequest(receptionNumber, cookies.accessToken).then(
       getBoardResponse
     );
-  }, []);
+  }, [loginUserRole]);
 
   //                    render                    //
   return (

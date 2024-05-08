@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect, useState } from "react";
+import React, { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import "./style.css";
 import { useUserStore } from "src/stores";
 import { useNavigate } from "react-router";
@@ -86,6 +86,7 @@ export default function QnaList() {
   };
 
   const changeSection = (totalPage: number) => {
+    if (!currentPage) return;
     const startPage =
       currentSection * COUNT_PER_SECTION - (COUNT_PER_SECTION - 1);
     let endPage = currentSection * COUNT_PER_SECTION;
@@ -159,8 +160,9 @@ export default function QnaList() {
 
     const { boardList } = result as GetSearchBoardResponseDto;
     changeBoardList(boardList);
-    setCurrentPage(1);
-    setCurrentSection(1);
+
+    setCurrentPage(!boardList.length ? 0 : 1);
+    setCurrentSection(!boardList.length ? 0 : 1);
   };
 
   //                    event handler                    //
@@ -179,7 +181,7 @@ export default function QnaList() {
   };
 
   const onPreSectionClickHandler = () => {
-    if (currentSection === 1) return;
+    if (currentSection <= 1) return;
     setCurrentSection(currentSection - 1);
     setCurrentPage((currentSection - 1) * COUNT_PER_SECTION);
   };
@@ -193,6 +195,13 @@ export default function QnaList() {
   const onSearchWordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     const searchWord = event.target.value;
     setSearchWord(searchWord);
+  };
+
+  const onSearchWordKeyDownHandler = (
+    event: KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key !== "Enter") return;
+    onSearchButtonClickHandler();
   };
 
   const onSearchButtonClickHandler = () => {
@@ -298,6 +307,7 @@ export default function QnaList() {
           <div
             className={searchButtonClass}
             onClick={onSearchButtonClickHandler}
+            onKeyDown={onSearchWordKeyDownHandler}
           >
             검색
           </div>

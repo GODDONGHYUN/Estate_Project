@@ -6,12 +6,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import com.estate.back.dto.response.ResponseDto;
 
 // # Request의 데이터 유효성 검사에서 발생하는 예외 처리
 @RestControllerAdvice
-public class ValidationExceptionHandler {
+public class CustomExceptionHandler {
 
 	// # RequestBody의 데이터 유효성 검사 중 발생하는 예외 핸들링
 	// ^ MethodArgumentTypeMismatchException : 유효하지 않은 데이터
@@ -24,11 +25,16 @@ public class ValidationExceptionHandler {
 			HttpMessageNotReadableException.class
 		})
 		public ResponseEntity<ResponseDto> validationExceptionHandler(Exception exception) {
-
 				{
 					exception.printStackTrace();
 					return ResponseDto.validationFailed();
 				}
+		}
 
+		@ExceptionHandler (NoHandlerFoundException.class) 
+		public ResponseEntity<ResponseDto> noHandlerFoundExceptionHandler(Exception exception) 
+		{
+			exception.printStackTrace();
+			return ResponseDto.notFound();
 		}
 }

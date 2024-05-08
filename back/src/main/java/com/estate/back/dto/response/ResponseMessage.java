@@ -21,6 +21,7 @@ public interface ResponseMessage {
 	String SIGN_IN_FAILED = "Sign in Failed.";
 	String AUTHENTICATION_FAILED = "Authentication failed.";
 	String AUTHORIZATION_FAILED = "Authorization Failed";
+	String NOT_FOUND = "Not Found";
 	String TOKEN_CREATION_FAILED = "Token creation failed.";
 	String MAIL_SEND_FAILED = "Mail send Failed.";
 	String DATABASE_ERROR = "Database error";
