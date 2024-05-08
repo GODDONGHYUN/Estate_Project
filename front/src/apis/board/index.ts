@@ -1,12 +1,18 @@
 import axios from "axios";
-import { PostBoardRequestDto, PostCommentRequestDto } from "./dto/request";
 import {
+  PostBoardRequestDto,
+  PostCommentRequestDto,
+  PutBoardRequestDto,
+} from "./dto/request";
+import {
+  DELETE_BOARD_URL,
   GET_BOARD_LIST_URL,
   GET_BOARD_URL,
   GET_SEARCH_BOARD_LIST_URL,
   INCREASE_VIEW_COUNT_URL,
   POST_BOARD_REQUEST_URL,
   POST_COMMENT_REQUEST_URL,
+  PUT_BOARD_URL,
 } from "src/constant/Index";
 import { bearerAuthorization, requestErrorHandler, requestHandler } from "..";
 import ResponseDto from "../response.dto";
@@ -28,7 +34,7 @@ export const postBoardRequest = async (
   return result;
 };
 
-// function : Q&A 답글 작성 API 함수
+// function: Q&A 답글 작성 API 함수
 export const postCommentRequest = async (
   receptionNumber: number | string,
   requestBody: PostCommentRequestDto,
@@ -81,6 +87,23 @@ export const getBoardRequest = async (
   return result;
 };
 
+// function : Q&A 게시물 수정 API 함수
+export const putBoardRequest = async (
+  receptionNumber: number | string,
+  requestBody: PutBoardRequestDto,
+  accessToken: string
+) => {
+  const result = await axios
+    .put(
+      PUT_BOARD_URL(receptionNumber),
+      requestBody,
+      bearerAuthorization(accessToken)
+    )
+    .then(requestHandler<ResponseDto>)
+    .catch(requestErrorHandler);
+  return result;
+};
+
 // function: Q&A 게시물 조회수 증가 API 함수
 export const increaseViewCountRequest = async (
   receptionNumber: number | string,
@@ -92,6 +115,18 @@ export const increaseViewCountRequest = async (
       {},
       bearerAuthorization(accessToken)
     )
+    .then(requestHandler<ResponseDto>)
+    .catch(requestErrorHandler);
+  return result;
+};
+
+// function: Q&A 게시물 삭제 API 함수
+export const deleteBoardRequest = async (
+  receptionNumber: number | string,
+  accessToken: string
+) => {
+  const result = await axios
+    .delete(DELETE_BOARD_URL(receptionNumber), bearerAuthorization(accessToken))
     .then(requestHandler<ResponseDto>)
     .catch(requestErrorHandler);
   return result;

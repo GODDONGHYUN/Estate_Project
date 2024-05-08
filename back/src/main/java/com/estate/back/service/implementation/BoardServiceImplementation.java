@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.estate.back.dto.request.board.PostBoardRequestDto;
 import com.estate.back.dto.request.board.PostCommentRequestDto;
+import com.estate.back.dto.request.board.PutBoardRequestDto;
 import com.estate.back.dto.response.ResponseDto;
 import com.estate.back.dto.response.board.GetBoardListResponseDto;
 import com.estate.back.dto.response.board.GetBoardResponseDto;
@@ -45,89 +46,147 @@ public class BoardServiceImplementation implements BoardService {
 
     }
 
-		@Override
-		public ResponseEntity<? super GetBoardListResponseDto> getBoardList() {
+    @Override
+    public ResponseEntity<? super GetBoardListResponseDto> getBoardList() {
+        
+        try {
 
-			try {
+            List<BoardEntity> boardEntities = boardRepository.findByOrderByReceptionNumberDesc();
+            return GetBoardListResponseDto.success(boardEntities);
 
-						List<BoardEntity> boardEntities = boardRepository.findByOrderByReceptionNumberDesc();
-						return GetBoardListResponseDto.success(boardEntities);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
 
-		} catch (Exception exception) {
-				exception.printStackTrace();;
-				return ResponseDto.dataBaseError();
-			}
+    }
 
-			
-		}
+    @Override
+    public ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(String searchWord) {
+        
+        try {
 
-		@Override
-		public ResponseEntity<? super GetSearchBoardListResponseDto> getSearchBoardList(String searchWord) {
-			try {
+            List<BoardEntity> boardEntities = boardRepository.findByTitleContainsOrderByReceptionNumberDesc(searchWord);
+            return GetSearchBoardListResponseDto.success(boardEntities);
 
-				List<BoardEntity> boardEntities = boardRepository.findByTitleContainsOrderByReceptionNumberDesc(searchWord);
-				return GetSearchBoardListResponseDto.success(boardEntities);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
 
-			} catch(Exception exception) {
-				exception.printStackTrace();
-				return ResponseDto.dataBaseError();
-			}
-		}
+    }
 
-		@Override
-		public ResponseEntity<? super GetBoardResponseDto> getBoard(int receptionNumber) {
+    @Override
+    public ResponseEntity<? super GetBoardResponseDto> getBoard(int receptionNumber) {
+        
+        try {
 
-			try {
-				BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
-				if (boardEntity == null) return ResponseDto.noExistBoard();
+            BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
+            if (boardEntity == null) return ResponseDto.noExistBoard();
 
+            return GetBoardResponseDto.success(boardEntity);
 
-				return GetBoardResponseDto.success(boardEntity);
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
+        
+    }
 
-			} catch(Exception exception) {
-				exception.printStackTrace();
-				return ResponseDto.dataBaseError();
-			}
-		}
+    @Override
+    public ResponseEntity<ResponseDto> increaseViewCount(int receptionNumber) {
+        
+        try {
 
-		@Override
-		public ResponseEntity<ResponseDto> increaseViewCount(int receptionNumber) {
-			try {
+            BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
+            if (boardEntity == null) return ResponseDto.noExistBoard();
 
-				BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
-				if (boardEntity == null) return ResponseDto.noExistBoard();
+            boardEntity.increaseViewCount();
+            boardRepository.save(boardEntity);
 
-				boardEntity.increaseViewCount();
-				boardRepository.save(boardEntity);
-			} catch(Exception exception) {
-				exception.printStackTrace();
-				return ResponseDto.dataBaseError();
-			}
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
 
-			return ResponseDto.success();
-		}
+        return ResponseDto.success();
 
-		@Override
-		public ResponseEntity<ResponseDto> postComment(PostCommentRequestDto dto, int receptionNumber) {
-				try {
+    }
 
-					BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
-					if (boardEntity == null) return ResponseDto.noExistBoard();
+    @Override
+    public ResponseEntity<ResponseDto> postComment(PostCommentRequestDto dto, int receptionNumber) {
+        
+        try {
 
-					boolean status = boardEntity.getStatus();
-					if (status) return ResponseDto.writtenComment();
+            BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
+            if (boardEntity == null) return ResponseDto.noExistBoard();
 
-					String comment = dto.getComment();
-					boardEntity.setStatus(true);
-					boardEntity.setComment(comment);
+            boolean status = boardEntity.getStatus();
+            if (status) return ResponseDto.writtenComment();
 
-					boardRepository.save(boardEntity);
+            String comment = dto.getComment();
+            boardEntity.setStatus(true);
+            boardEntity.setComment(comment);
 
-				} catch(Exception exception) {
-					exception.printStackTrace();
-					return ResponseDto.dataBaseError();
-				}
-				return ResponseDto.success();
-		}
+            boardRepository.save(boardEntity);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
+
+        return ResponseDto.success();
+
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> deleteBoard(int receptionNumber, String userId) {
+        
+        try {
+
+            BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
+            if (boardEntity == null) return ResponseDto.noExistBoard();
+
+            String writerId = boardEntity.getWriterId();
+            boolean isWriter = userId.equals(writerId);
+            if (!isWriter) return ResponseDto.authorizationFailed();
+
+            boardRepository.delete(boardEntity);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
+
+        return ResponseDto.success();
+
+    }
+
+    @Override
+    public ResponseEntity<ResponseDto> putBoard(PutBoardRequestDto dto, int receptionNumber, String userId) {
+        
+        try {
+
+            BoardEntity boardEntity = boardRepository.findByReceptionNumber(receptionNumber);
+            if (boardEntity == null) return ResponseDto.noExistBoard();
+
+            String writerId = boardEntity.getWriterId();
+            boolean isWriter = userId.equals(writerId);
+            if (!isWriter) return ResponseDto.authorizationFailed();
+
+            boolean status = boardEntity.getStatus();
+            if (status) return ResponseDto.writtenComment();
+
+            boardEntity.update(dto);
+            boardRepository.save(boardEntity);
+
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            return ResponseDto.dataBaseError();
+        }
+
+        return ResponseDto.success();
+
+    }
     
 }

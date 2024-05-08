@@ -6,7 +6,7 @@ import {
   AUTH_ABSOLUTE_PATH,
   COUNT_PER_PAGE,
   COUNT_PER_SECTION,
-  QNA_DEATIL_ABSOLUTE_PATH,
+  QNA_DETAIL_ABSOLUTE_PATH,
   QNA_WRITE_ABSOLUTE_PATH,
 } from "src/constant/Index";
 import { BoardListItem } from "src/types";
@@ -32,7 +32,7 @@ function ListItem({
 
   //                    event handler                    //
   const onClickHandler = () =>
-    navigator(QNA_DEATIL_ABSOLUTE_PATH(receptionNumber));
+    navigator(QNA_DETAIL_ABSOLUTE_PATH(receptionNumber));
 
   //                    render                    //
   return (
@@ -96,6 +96,8 @@ export default function QnaList() {
   };
 
   const changeBoardList = (boardList: BoardListItem[]) => {
+    if (isToggleOn) boardList = boardList.filter((board) => !board.status);
+
     setBoardList(boardList);
 
     const totalLenght = boardList.length;
@@ -131,6 +133,9 @@ export default function QnaList() {
 
     const { boardList } = result as GetBoardListResponseDto;
     changeBoardList(boardList);
+
+    setCurrentPage(1);
+    setCurrentSection(1);
   };
 
   const getSearchBoardListResponse = (
@@ -203,7 +208,9 @@ export default function QnaList() {
   useEffect(() => {
     if (!cookies.accessToken) return;
     getBoardListRequest(cookies.accessToken).then(getBoardListResponse);
-  }, []);
+    setCurrentPage(1);
+    setCurrentSection(1);
+  }, [isToggleOn]);
 
   useEffect(() => {
     if (!boardList.length) return;

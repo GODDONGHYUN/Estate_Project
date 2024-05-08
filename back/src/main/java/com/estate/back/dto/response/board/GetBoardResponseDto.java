@@ -33,7 +33,7 @@ public class GetBoardResponseDto extends ResponseDto {
 		this.writerId = boardEntity.getWriterId();
 		this.writeDatetime = writeDatetime;
 		this.viewCount = boardEntity.getViewCount();
-		this.contents = boardEntity.getContent();
+		this.contents = boardEntity.getContents();
 		this.comment = boardEntity.getComment();
 	}
 
