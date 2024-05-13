@@ -15,7 +15,7 @@ export const LOCAL_ABSOLUTE_PATH = `${SERVICE_PATH}/${LOCAL_PATH}`;
 export const RATIO_ABSOLUTE_PATH = `${SERVICE_PATH}/${RATIO_PATH}`;
 export const QNA_LIST_ABSOLUTE_PATH = `${SERVICE_PATH}/${QNA_PATH}`;
 export const QNA_WRITE_ABSOLUTE_PATH = `${SERVICE_PATH}/${QNA_PATH}/${QNA_WRITE_PATH}`;
-export const QNA_DETAIL_ABSOLUTE_PATH = (receptionNumber: number | string) =>
+export const QNA_DETAIL_ABSOLUTE_PATH = (receptionNumber: string | number) =>
   `${SERVICE_PATH}/${QNA_PATH}/${receptionNumber}`;
 export const QNA_UPDATE_ABSOLUTE_PATH = (receptionNumber: string | number) =>
   `${SERVICE_PATH}/${QNA_PATH}/update/${receptionNumber}`;
@@ -51,6 +51,13 @@ export const INCREASE_VIEW_COUNT_URL = (receptionNumber: number | string) =>
 export const DELETE_BOARD_URL = (receptionNumber: number | string) =>
   `${SERVER_BOARD_MODULE_URL}/${receptionNumber}`;
 
+export const SERVER_ESTATE_MODULE_URL = `${SERVER_API_URL}/estate`;
+
+export const GET_LOCAL_DATA_URL = (local: string) =>
+  `${SERVER_ESTATE_MODULE_URL}/local/${local}`;
+export const GET_RATIO_DATA_URL = (local: string) =>
+  `${SERVER_ESTATE_MODULE_URL}/ratio/${local}`;
+
 // description: 게시물 상수
-export const COUNT_PER_PAGE = 1;
-export const COUNT_PER_SECTION = 2;
+export const COUNT_PER_PAGE = 10;
+export const COUNT_PER_SECTION = 10;
