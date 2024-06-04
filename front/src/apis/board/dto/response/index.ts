@@ -9,6 +9,7 @@ export interface GetSearchBoardResponseDto extends ResponseDto {
   boardList: BoardListItem[];
 }
 
+
 export interface GetBoardResponseDto extends ResponseDto {
   receptionNumber: number;
   status: boolean;

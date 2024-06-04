@@ -1,5 +1,6 @@
 package com.estate.back.handler;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,9 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private final JwtProvider jwtProvider;
 
+		@Value("${front.host}")
+		private String FRONT_HOST;
+
     @Override
     public void onAuthenticationSuccess(
         HttpServletRequest request, 
@@ -31,7 +35,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String token = jwtProvider.create(userId);
 
-        response.sendRedirect("http://localhost:3000/sns/" + token + "/36000");
+        response.sendRedirect(FRONT_HOST + "/sns/" + token + "/36000");
 
     }
 
